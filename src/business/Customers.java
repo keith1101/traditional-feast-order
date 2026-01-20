@@ -2,22 +2,15 @@ package business;
 import java.util.ArrayList;
 import java.util.List;
 import model.Customer;
-import tools.Inputter;
-import tools.Acceptable;
 import tools.FileUtils;
 import java.util.Collections;
-import model.Order;
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 
 /**
  *
  * @author LENOVO
  */
 public class Customers extends ArrayList<Customer> implements Workable<Customer> {
-    String pathFile;
     String pathFileSave;
     boolean saved;
     
@@ -38,7 +31,11 @@ public class Customers extends ArrayList<Customer> implements Workable<Customer>
     @Override
     public void update(Customer customer) {
         Customer updatedCustomer = searchById(customer.getId());
-        updatedCustomer = customer;
+        if (updatedCustomer != null) {
+            updatedCustomer.setName(customer.getName());
+            updatedCustomer.setPhone(customer.getPhone());
+            updatedCustomer.setEmail(customer.getEmail());
+        }
     }
     
     @Override
@@ -52,6 +49,7 @@ public class Customers extends ArrayList<Customer> implements Workable<Customer>
     }
     
     public String formatName(String name) {
+        if (name == null || name.isEmpty()) return "";
         String[] customerName = name.split(" ");
         String temp = customerName[customerName.length - 1];
         customerName[customerName.length - 1] = "";
@@ -77,24 +75,6 @@ public class Customers extends ArrayList<Customer> implements Workable<Customer>
         Collections.sort(filteredCustomers, (customer1, customer2) -> (customer1.getName().compareTo(customer2.getName())));
         return filteredCustomers;
 
-    }
-    
-    public void searchCustomerByName() {
-        while (true) {
-            String name = Inputter.inputAndLoop("Enter customer name to search:", Acceptable.NAME_VALID);
-            List<Customer> customers = filterByName(name);
-            if (!customers.isEmpty()) {
-                showAll(customers);
-            } else {
-                System.out.println("No one matches the search criteria!");
-            }
-            
-            String choice = Inputter.inputAndLoop("Do you want to continue to search for customers by name? (Y/N)", Acceptable.YES_NO_VALID);
-            
-            if (choice.equalsIgnoreCase("N")) {
-                break;
-            }
-        }
     }
     
     @Override
@@ -130,6 +110,7 @@ public class Customers extends ArrayList<Customer> implements Workable<Customer>
     public void saveToFile() {
         if (this.isSaved()) return;
         FileUtils.saveToFile(this, pathFileSave);
+        saved = true;
         System.out.println("Customer data has been successfully saved to “customers.dat”.");
     }
     

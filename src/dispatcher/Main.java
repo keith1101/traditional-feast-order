@@ -11,6 +11,7 @@ package dispatcher;
 public class Main {
   
     public static void main(String[] args){
-        Menu.showMenu();
+        Menu menu = new Menu();
+        menu.showMenu();
     }
 }

@@ -17,10 +17,8 @@ import model.SetMenu;
  */
 public class SetMenus extends ArrayList<SetMenu> {
     String pathFile;
-//    ArrayList<SetMenu> listSetMenu;
     public SetMenus() {
-//        listSetMenu = new ArrayList<>();
-        pathFile = "src\\FeastMenu.csv";
+        pathFile = "src/FeastMenu.csv";
         readFromFile();
     }
     
@@ -47,6 +45,7 @@ public class SetMenus extends ArrayList<SetMenu> {
             while (sc.hasNextLine()) {
                 this.add(dataToObject(sc.nextLine()));
             }
+            sc.close();
         }
         catch (FileNotFoundException e) {
             System.out.println("Cannot read data from feastMenu.csv. Please check it.");

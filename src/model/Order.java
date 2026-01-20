@@ -52,7 +52,7 @@ public class Order implements Serializable {
     
     private String generateOrderCode() {
         Date now = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         return sdf.format(now);
     }
     
@@ -113,11 +113,7 @@ public class Order implements Serializable {
 
     @Override
     public String toString() {
-        return "";
-    }
-
-    public void setEventDate(String eventDate) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return "Order{" + "orderCode=" + orderCode + ", customerId=" + customerId + ", menuId=" + menuId + ", numOfTables=" + numOfTables + ", eventDate=" + eventDate + "}";
     }
     
     
