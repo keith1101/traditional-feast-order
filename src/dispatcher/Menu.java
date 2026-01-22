@@ -49,7 +49,6 @@ public class Menu {
                 case 2:
                     updateCustomerInformation();
                     break;
-                    
                 case 3:
                     searchForCustomerInformationByName();
                     break;
@@ -115,22 +114,37 @@ public class Menu {
 
             customer = listCustomer.searchById(customerId);
 
-            String updateChoice = Inputter.inputAndLoop("Which do you want to update? (Choose 1-3)\n1.Name\n2.Phone\n3.Email\nChoose:", "^[1-3]$");
+//            String updateChoice = Inputter.inputAndLoop("Which do you want to update? (Choose 1-3)\n1.Name\n2.Phone\n3.Email\nChoose:", "^[1-3]$");
+//
+//            switch (updateChoice) {
+//                case "1":
+//                    String customerName = Inputter.inputAndLoop("Enter updated name:", Acceptable.NAME_VALID);
+//                    customer.setName(customerName);
+//                    break;
+//                case "2":
+//                    String customerPhone = Inputter.inputAndLoop("Enter updated phone number:", Acceptable.PHONE_VALID);
+//                    customer.setPhone(customerPhone);
+//                    break;
+//                case "3":
+//                    String customerEmail = Inputter.inputAndLoop("Enter updated email:", Acceptable.EMAIL_VALID);
+//                    customer.setEmail(customerEmail);
+//                    break;
+//            }
 
-            switch (updateChoice) {
-                case "1":
-                    String customerName = Inputter.inputAndLoop("Enter updated name:", Acceptable.NAME_VALID);
-                    customer.setName(customerName);
-                    break;
-                case "2":
-                    String customerPhone = Inputter.inputAndLoop("Enter updated phone number:", Acceptable.PHONE_VALID);
-                    customer.setPhone(customerPhone);
-                    break;
-                case "3":
-                    String customerEmail = Inputter.inputAndLoop("Enter updated email:", Acceptable.EMAIL_VALID);
-                    customer.setEmail(customerEmail);
-                    break;
+            String customerName = Inputter.inputAndLoop("Enter updated name (Press 'Enter' to keep the old value):", "(" + Acceptable.NAME_VALID + "|\n)");
+            if (customerName != null && customerName.isEmpty()) {
+                customer.setName(customerName);
             }
+            String customerPhone = Inputter.inputAndLoop("Enter updated phone number (Press 'Enter' to keep the old value):", "(" + Acceptable.PHONE_VALID + "|\n)");
+            if (customerPhone != null && customerPhone.isEmpty()) {
+                customer.setPhone(customerPhone);
+            }
+            
+            String customerEmail = Inputter.inputAndLoop("Enter updated email:", "(" + Acceptable.EMAIL_VALID + "|\n)");
+            if (customerEmail != null && customerEmail.isEmpty()) {
+                customer.setEmail(customerEmail);
+            }
+            
             listCustomer.update(customer);
             System.out.println("Customer information updated successfully!");
 
@@ -167,48 +181,95 @@ public class Menu {
 
             order = listOrder.searchById(orderId);
 
-            String updateChoice = Inputter.inputAndLoop("Which do you want to update? (Choose 1-3)\n1. Code of set menu\n2. Number of table\n3. Preferred event date\nChoose:", "^[1-3]$");
+            // String updateChoice = Inputter.inputAndLoop("Which do you want to update? (Choose 1-3)\n1. Code of set menu\n2. Number of table\n3. Preferred event date\nChoose:", "^[1-3]$");
 
-            switch (updateChoice) {
-                case "1":
-                    String codeOfSetMenu;
-                    do {
-                        codeOfSetMenu = Inputter.getString("Enter the menu code to update:");
-                        if (listOrder.listSetMenu.isValidMenuId(codeOfSetMenu) == null) {
-                            System.out.println("Code menu does not exists!");
-                        }
-                    } while (listOrder.listSetMenu.isValidMenuId(codeOfSetMenu) == null);
-                    order.setMenuId(codeOfSetMenu);
-                    break;
-                case "2":
-                    int numOfTable;
-                    do {
-                        numOfTable = Inputter.getInt("Enter number of table to update:");
-                        if (numOfTable <= 0) {
-                            System.out.println("Number of tables need to be greater than 0.");
-                        }
-                    } while (numOfTable <= 0);
-                    order.setNumOfTables(numOfTable);
-                    break;
-                case "3":
-                    Date dateObj = null;
-                    SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM/yyyy");
-                    do {
-                        try {
-                            dateObj = formatDate.parse(Inputter.getString("Enter date to update:"));
-                            if (dateObj != null && new Date().after(dateObj)) {
-                                System.out.println("The preferred date needs to be in the future!");
-                                dateObj = null;
-                            }
-                        } catch (ParseException e) {
-                            System.out.println("Wrong date format!");
-                        }
+            // switch (updateChoice) {
+            //     case "1":
+            //         String codeOfSetMenu;
+            //         do {
+            //             codeOfSetMenu = Inputter.getString("Enter the menu code to update:");
+            //             if (listOrder.getListSetMenu().isValidMenuId(codeOfSetMenu) == null) {
+            //                 System.out.println("Code menu does not exists!");
+            //             }
+            //         } while (listOrder.getListSetMenu().isValidMenuId(codeOfSetMenu) == null);
+            //         order.setMenuId(codeOfSetMenu);
+            //         break;
+            //     case "2":
+            //         int numOfTable;
+            //         do {
+            //             numOfTable = Inputter.getInt("Enter number of table to update:");
+            //             if (numOfTable <= 0) {
+            //                 System.out.println("Number of tables need to be greater than 0.");
+            //             }
+            //         } while (numOfTable <= 0);
+            //         order.setNumOfTables(numOfTable);
+            //         break;
+            //     case "3":
+            //         Date dateObj = null;
+            //         SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM/yyyy");
+            //         do {
+            //             try {
+            //                 dateObj = formatDate.parse(Inputter.getString("Enter date to update:"));
+            //                 if (dateObj != null && new Date().after(dateObj)) {
+            //                     System.out.println("The preferred date needs to be in the future!");
+            //                     dateObj = null;
+            //                 }
+            //             } catch (ParseException e) {
+            //                 System.out.println("Wrong date format!");
+            //             }
 
-                    } while (dateObj == null || new Date().after(dateObj));
+            //         } while (dateObj == null || new Date().after(dateObj));
 
-                    order.setEventDate(dateObj);
-                    break;
+            //         order.setEventDate(dateObj);
+            //         break;
+            // }
+            
+            String codeOfSetMenu;
+            do {
+                codeOfSetMenu = Inputter.getString("Enter the menu code to update (Press 'Enter' to keep the old value):");
+                if (codeOfSetMenu != null && listOrder.getListSetMenu().isValidMenuId(codeOfSetMenu) == null) {
+                    System.out.println("Code menu does not exists!");
+                }
+            } while (listOrder.getListSetMenu().isValidMenuId(codeOfSetMenu) == null && codeOfSetMenu != null && codeOfSetMenu.isEmpty());
+            if (codeOfSetMenu != null && !codeOfSetMenu.isEmpty()) {
+                order.setMenuId(codeOfSetMenu);
             }
+
+            String numOfTable;
+            do {
+                numOfTable = Inputter.inputAndLoop("Enter number of table to update (Press 'Enter' to keep the old value):", "(" + Acceptable.INTEGER_VALID + "|\n");
+                if (!numOfTable.isEmpty() && numOfTable != null && Integer.parseInt(numOfTable) <= 0) {
+                    System.out.println("Number of tables need to be greater than 0.");
+                }
+            } while (!numOfTable.isEmpty() && numOfTable != null && Integer.parseInt(numOfTable) <= 0);
+            if (!numOfTable.isEmpty() && numOfTable != null) {
+                order.setNumOfTables(Integer.parseInt(numOfTable));
+            }
+
+            Date dateObj = null;
+            SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM/yyyy");
+            do {
+                dateObj = null;
+                try {
+                    String dateObjString = Inputter.getString("Enter date to update (Press 'Enter' to keep the old value):");
+                    if (dateObjString.isEmpty() || dateObjString == null) {
+                        break;
+                    }
+                    dateObj = formatDate.parse(dateObjString);
+                    if (dateObj != null && new Date().after(dateObj)) {
+                        System.out.println("The preferred date needs to be in the future!");
+                        dateObj = null;
+                    }
+                } catch (ParseException e) {
+                    System.out.println("Wrong date format!");
+                }
+
+            } while (dateObj == null || new Date().after(dateObj));
+
+            if (dateObj != null) {
+                order.setEventDate(dateObj);
+            }
+            
             listOrder.update(order);
             String returnMenu = Inputter.inputAndLoop("Do you want to continue with another update? (Y/N):", Acceptable.YES_NO_VALID);
 

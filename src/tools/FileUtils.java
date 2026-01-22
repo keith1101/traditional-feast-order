@@ -17,19 +17,20 @@ public class FileUtils<T> {
             File file = new File(filePath);
             
             fileInputStreamObject = new FileInputStream(file);
-            try (ObjectInputStream objectInputStreamObject = new ObjectInputStream(fileInputStreamObject)) {
+            try {
+                ObjectInputStream objectInputStreamObject = new ObjectInputStream(fileInputStreamObject);
                 while (fileInputStreamObject.available() > 0) {
                     T object = (T) objectInputStreamObject.readObject();
                     listObject.add(object);
                 }
                 
                 fileInputStreamObject.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             
         } catch (IOException e) {
             System.out.println("Error reading from file: " + filePath);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Class not found while reading file: " + e.getMessage());
         }
         return listObject;
     }
@@ -39,13 +40,16 @@ public class FileUtils<T> {
         try {
             File file = new File(filePath);
             fileOutputStreamObject = new FileOutputStream(file);
-            try (ObjectOutputStream objectOutputStreamObject = new ObjectOutputStream(fileOutputStreamObject)) {
+            try {
+                ObjectOutputStream objectOutputStreamObject = new ObjectOutputStream(fileOutputStreamObject);
                 for (T object : listObject) {
                     objectOutputStreamObject.writeObject(object);
                 }
                 
                 fileOutputStreamObject.close();
                 objectOutputStreamObject.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         catch (IOException e) {

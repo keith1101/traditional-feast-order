@@ -1,20 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package business;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Scanner;
 import model.SetMenu;
 
-/**
- *
- * @author LENOVO
- */
 public class SetMenus extends ArrayList<SetMenu> {
     String pathFile;
     public SetMenus() {
@@ -72,7 +63,16 @@ public class SetMenus extends ArrayList<SetMenu> {
         System.out.println("List of Set Menus for ordering party:");
         System.out.println("----------------------------------------------------");
         
-        Collections.sort(this, (set_menu_1, set_menu_2) -> (Double.compare(set_menu_1.getPrice(), set_menu_2.getPrice())));
+        // Bubble sort by price
+        for (int i = 0; i < this.size() - 1; i++) {
+            for (int j = 0; j < this.size() - 1 - i; j++) {
+                if (Double.compare(this.get(j).getPrice(), this.get(j + 1).getPrice()) > 0) {
+                    SetMenu temp = this.get(j);
+                    this.set(j, this.get(j + 1));
+                    this.set(j + 1, temp);
+                }
+            }
+        }
         
         for (SetMenu item: this) {
             String[] listIngredients = item.getIngredients().split("#");

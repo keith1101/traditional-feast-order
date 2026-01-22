@@ -3,13 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Customer;
 import tools.FileUtils;
-import java.util.Collections;
 
-
-/**
- *
- * @author LENOVO
- */
 public class Customers extends ArrayList<Customer> implements Workable<Customer> {
     String pathFileSave;
     boolean saved;
@@ -72,7 +66,15 @@ public class Customers extends ArrayList<Customer> implements Workable<Customer>
             }
         }
         
-        Collections.sort(filteredCustomers, (customer1, customer2) -> (customer1.getName().compareTo(customer2.getName())));
+        for (int i = 0; i < filteredCustomers.size() - 1; i++) {
+            for (int j = 0; j < filteredCustomers.size() - 1 - i; j++) {
+                if (filteredCustomers.get(j).getName().compareTo(filteredCustomers.get(j + 1).getName()) > 0) {
+                    Customer temp = filteredCustomers.get(j);
+                    filteredCustomers.set(j, filteredCustomers.get(j + 1));
+                    filteredCustomers.set(j + 1, temp);
+                }
+            }
+        }
         return filteredCustomers;
 
     }
@@ -82,7 +84,16 @@ public class Customers extends ArrayList<Customer> implements Workable<Customer>
         saveToFile();
         this.clear();
         readFromFile();
-        Collections.sort(this, (customer_1, customer_2) -> (customer_1.getName().compareTo(customer_2.getName())));
+
+        for (int i = 0; i < this.size() - 1; i++) {
+            for (int j = 0; j < this.size() - 1 - i; j++) {
+                if (this.get(j).getName().compareTo(this.get(j + 1).getName()) > 0) {
+                    Customer temp = this.get(j);
+                    this.set(j, this.get(j + 1));
+                    this.set(j + 1, temp);
+                }
+            }
+        }
         showAll(this);
     }
     

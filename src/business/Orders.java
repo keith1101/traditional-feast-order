@@ -1,36 +1,28 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package business;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import model.Order;
 import tools.FileUtils;
 
-/**
- *
- * @author LENOVO
- */
 public class Orders extends HashSet<Order> implements Workable<Order>{
     
-    boolean saved;
-    String setMenuPath;
-    String pathFileSave;
+    private boolean saved;
+    private String pathFileSave;
     
-    public SetMenus listSetMenu;
+    private SetMenus listSetMenu;
     
-    SimpleDateFormat formatTime = new SimpleDateFormat("dd/MM/yyyy");
+    private SimpleDateFormat formatTime = new SimpleDateFormat("dd/MM/yyyy");
+    
+    public SetMenus getListSetMenu() {
+        return listSetMenu;
+    }
 
     
     public Orders() {
         listSetMenu = new SetMenus();
-        setMenuPath = "src/FeastMenu.csv";
         pathFileSave = "src/feast_order_service.dat";
         saved = false;
         listSetMenu.readFromFile();
@@ -84,8 +76,15 @@ public class Orders extends HashSet<Order> implements Workable<Order>{
             return;
         }
         
-        // Collections.sort(orders, (order_1, order_2) -> (order_1.getEventDate().compareTo(order_2.getEventDate())));
-        Collections.sort(orders, Comparator.comparing(Order::getEventDate));
+        for (int i = 0; i < orders.size() - 1; i++) {
+            for (int j = 0; j < orders.size() - 1 - i; j++) {
+                if (orders.get(j).getEventDate().compareTo(orders.get(j + 1).getEventDate()) > 0) {
+                    Order temp = orders.get(j);
+                    orders.set(j, orders.get(j + 1));
+                    orders.set(j + 1, temp);
+                }
+            }
+        }
         
         System.out.println("-------------------------------------------------------------------------------");
         System.out.println(String.format("%-15s|%-10s|%-11s|%-7s|%-9s|%-6s|%15s","ID","Event","Customer ID","SetMenu","Price","Tables","Cost"));
