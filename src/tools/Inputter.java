@@ -38,14 +38,14 @@ public class Inputter {
         return result;
     }
     
-    public static String inputAndLoop(String mess, String pattern) {
+    public static String inputAndLoop(String mess, String invalidMess, String pattern) {
         boolean more = true;
         String result;
         do {
             result = getString(mess).trim();
             more = !Acceptable.isValid(result, pattern);
-            if (result.isEmpty() || more) {
-                System.out.println("Data invalid! Please re-enter...");
+            if (more) {
+                System.out.println(invalidMess);
             }
         } while (more);
         return result;
@@ -53,7 +53,7 @@ public class Inputter {
 
     public static void searchCustomerByName(Customers listCustomer) {
         while (true) {
-            String name = Inputter.inputAndLoop("Enter customer name to search:", Acceptable.NAME_VALID);
+            String name = Inputter.inputAndLoop("Enter customer name to search:", "Invalid name! Must be 2-25 alphabetic characters.", Acceptable.NAME_VALID);
             List<Customer> customers = listCustomer.filterByName(name);
             if (!customers.isEmpty()) {
                 listCustomer.showAll(customers);
@@ -61,7 +61,7 @@ public class Inputter {
                 System.out.println("No one matches the search criteria!");
             }
             
-            String choice = Inputter.inputAndLoop("Do you want to continue to search for customers by name? (Y/N)", Acceptable.YES_NO_VALID);
+            String choice = Inputter.inputAndLoop("Do you want to continue to search for customers by name? (Y/N):", "Invalid choice! Please enter Y or N.", Acceptable.YES_NO_VALID);
             
             if (choice.equalsIgnoreCase("N")) {
                 break;
@@ -110,7 +110,7 @@ public class Inputter {
         while (true) {
             String customerId;
             do {
-                customerId = Inputter.inputAndLoop("Enter customer code to order:", Acceptable.CUSTOMER_ID_VALID);
+                customerId = Inputter.inputAndLoop("Enter customer code to order:", "Invalid customer code! Must start with C, G, or K followed by 4 digits.", Acceptable.CUSTOMER_ID_VALID);
                 if (listCustomer.searchById(customerId) == null) {
                     System.out.println("Customer code doesn't exist!");
                 }
@@ -159,7 +159,7 @@ public class Inputter {
             
             displaySuccess(listCustomer, listFeast, listOrder, newOrder);
 
-            String returnMenu = Inputter.inputAndLoop("Do you want to continue with place another order? (Y/N):", Acceptable.YES_NO_VALID);
+            String returnMenu = Inputter.inputAndLoop("Do you want to continue with place another order? (Y/N):", "Invalid choice! Please enter Y or N.", Acceptable.YES_NO_VALID);
             if (returnMenu.equalsIgnoreCase("N")) {
                 break;
             }

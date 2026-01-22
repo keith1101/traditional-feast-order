@@ -81,20 +81,20 @@ public class Menu {
         do {
             String customerId = "";
             do {
-                customerId = Inputter.inputAndLoop("\nEnter Customer Code:", Acceptable.CUSTOMER_ID_VALID);
+                customerId = Inputter.inputAndLoop("\nEnter Customer Code:", "Invalid customer code! Must start with C, G, or K followed by 4 digits.", Acceptable.CUSTOMER_ID_VALID);
                 if (listCustomer.searchById(customerId) != null) {
                     System.out.println("Customer Id exists!");
                 }
             } while(listCustomer.searchById(customerId) != null);
 
-            String customerName = Inputter.inputAndLoop("Enter Customer Name:", Acceptable.NAME_VALID);
-            String customerPhone = Inputter.inputAndLoop("Enter Customer Phone Number:", Acceptable.PHONE_VALID);
-            String customerEmail = Inputter.inputAndLoop("Enter Customer Email:", Acceptable.EMAIL_VALID);
+            String customerName = Inputter.inputAndLoop("Enter Customer Name:", "Invalid name! Must be 2-25 alphabetic characters.", Acceptable.NAME_VALID);
+            String customerPhone = Inputter.inputAndLoop("Enter Customer Phone Number:", "Invalid phone number! Must start with 09 followed by 8 digits.", Acceptable.PHONE_VALID);
+            String customerEmail = Inputter.inputAndLoop("Enter Customer Email:", "Invalid email format! Valid: example@gmail.com.", Acceptable.EMAIL_VALID);
 
             customer = new Customer(customerId, customerName, customerPhone, customerEmail);
             listCustomer.addNew(customer);
 
-            String returnMenu = Inputter.inputAndLoop("Do you want to continue entering new customers? (Y/N)", Acceptable.YES_NO_VALID);
+            String returnMenu = Inputter.inputAndLoop("Do you want to continue entering new customers? (Y/N)", "Invalid choice! Please enter Y or N.", Acceptable.YES_NO_VALID);
 
             if (returnMenu.equalsIgnoreCase("N"))
                 break;
@@ -106,7 +106,7 @@ public class Menu {
         while(true) {
             String customerId;
             do {
-                customerId = Inputter.inputAndLoop("Enter Customer Code to update:", Acceptable.CUSTOMER_ID_VALID);
+                customerId = Inputter.inputAndLoop("Enter Customer Code to update:", "Invalid customer code! Must start with C, G, or K followed by 4 digits.", Acceptable.CUSTOMER_ID_VALID);
                 if (listCustomer.searchById(customerId) == null) {
                     System.out.println("This customer does not exist");
                 }
@@ -114,41 +114,24 @@ public class Menu {
 
             customer = listCustomer.searchById(customerId);
 
-//            String updateChoice = Inputter.inputAndLoop("Which do you want to update? (Choose 1-3)\n1.Name\n2.Phone\n3.Email\nChoose:", "^[1-3]$");
-//
-//            switch (updateChoice) {
-//                case "1":
-//                    String customerName = Inputter.inputAndLoop("Enter updated name:", Acceptable.NAME_VALID);
-//                    customer.setName(customerName);
-//                    break;
-//                case "2":
-//                    String customerPhone = Inputter.inputAndLoop("Enter updated phone number:", Acceptable.PHONE_VALID);
-//                    customer.setPhone(customerPhone);
-//                    break;
-//                case "3":
-//                    String customerEmail = Inputter.inputAndLoop("Enter updated email:", Acceptable.EMAIL_VALID);
-//                    customer.setEmail(customerEmail);
-//                    break;
-//            }
-
-            String customerName = Inputter.inputAndLoop("Enter updated name (Press 'Enter' to keep the old value):", "(" + Acceptable.NAME_VALID + "|\n)");
-            if (customerName != null && customerName.isEmpty()) {
+            String customerName = Inputter.inputAndLoop("Enter updated name (Press 'Enter' to keep the old value):", "Invalid name! Must be 2-25 alphabetic characters or press Enter to skip.", "(" + Acceptable.NAME_VALID + "|^$)");
+            if (customerName != null && !customerName.isEmpty()) {
                 customer.setName(customerName);
             }
-            String customerPhone = Inputter.inputAndLoop("Enter updated phone number (Press 'Enter' to keep the old value):", "(" + Acceptable.PHONE_VALID + "|\n)");
-            if (customerPhone != null && customerPhone.isEmpty()) {
+            String customerPhone = Inputter.inputAndLoop("Enter updated phone number (Press 'Enter' to keep the old value):", "Invalid phone number! Must start with 09 followed by 8 digits or press Enter to skip.", "(" + Acceptable.PHONE_VALID + "|^$)");
+            if (customerPhone != null && !customerPhone.isEmpty()) {
                 customer.setPhone(customerPhone);
             }
             
-            String customerEmail = Inputter.inputAndLoop("Enter updated email:", "(" + Acceptable.EMAIL_VALID + "|\n)");
-            if (customerEmail != null && customerEmail.isEmpty()) {
+            String customerEmail = Inputter.inputAndLoop("Enter updated email (Press 'Enter' to keep the old value):", "Invalid email format or press Enter to skip!", "(" + Acceptable.EMAIL_VALID + "|^$)");
+            if (customerEmail != null && !customerEmail.isEmpty()) {
                 customer.setEmail(customerEmail);
             }
             
             listCustomer.update(customer);
             System.out.println("Customer information updated successfully!");
 
-            String returnMenu = Inputter.inputAndLoop("Do you want to continue with another update? (Y/N):", Acceptable.YES_NO_VALID);
+            String returnMenu = Inputter.inputAndLoop("Do you want to continue with another update? (Y/N):", "Invalid choice! Please enter Y or N.", Acceptable.YES_NO_VALID);
             if (returnMenu.equalsIgnoreCase("N")) {
                 break;
             }
@@ -180,49 +163,6 @@ public class Menu {
             while (listOrder.searchById(orderId) == null);
 
             order = listOrder.searchById(orderId);
-
-            // String updateChoice = Inputter.inputAndLoop("Which do you want to update? (Choose 1-3)\n1. Code of set menu\n2. Number of table\n3. Preferred event date\nChoose:", "^[1-3]$");
-
-            // switch (updateChoice) {
-            //     case "1":
-            //         String codeOfSetMenu;
-            //         do {
-            //             codeOfSetMenu = Inputter.getString("Enter the menu code to update:");
-            //             if (listOrder.getListSetMenu().isValidMenuId(codeOfSetMenu) == null) {
-            //                 System.out.println("Code menu does not exists!");
-            //             }
-            //         } while (listOrder.getListSetMenu().isValidMenuId(codeOfSetMenu) == null);
-            //         order.setMenuId(codeOfSetMenu);
-            //         break;
-            //     case "2":
-            //         int numOfTable;
-            //         do {
-            //             numOfTable = Inputter.getInt("Enter number of table to update:");
-            //             if (numOfTable <= 0) {
-            //                 System.out.println("Number of tables need to be greater than 0.");
-            //             }
-            //         } while (numOfTable <= 0);
-            //         order.setNumOfTables(numOfTable);
-            //         break;
-            //     case "3":
-            //         Date dateObj = null;
-            //         SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM/yyyy");
-            //         do {
-            //             try {
-            //                 dateObj = formatDate.parse(Inputter.getString("Enter date to update:"));
-            //                 if (dateObj != null && new Date().after(dateObj)) {
-            //                     System.out.println("The preferred date needs to be in the future!");
-            //                     dateObj = null;
-            //                 }
-            //             } catch (ParseException e) {
-            //                 System.out.println("Wrong date format!");
-            //             }
-
-            //         } while (dateObj == null || new Date().after(dateObj));
-
-            //         order.setEventDate(dateObj);
-            //         break;
-            // }
             
             String codeOfSetMenu;
             do {
@@ -237,7 +177,7 @@ public class Menu {
 
             String numOfTable;
             do {
-                numOfTable = Inputter.inputAndLoop("Enter number of table to update (Press 'Enter' to keep the old value):", "(" + Acceptable.INTEGER_VALID + "|\n");
+                numOfTable = Inputter.inputAndLoop("Enter number of table to update (Press 'Enter' to keep the old value):", "Invalid number! Must be a positive integer or press Enter to skip.", "(" + Acceptable.INTEGER_VALID + "|^$)");
                 if (!numOfTable.isEmpty() && numOfTable != null && Integer.parseInt(numOfTable) <= 0) {
                     System.out.println("Number of tables need to be greater than 0.");
                 }
@@ -271,7 +211,7 @@ public class Menu {
             }
             
             listOrder.update(order);
-            String returnMenu = Inputter.inputAndLoop("Do you want to continue with another update? (Y/N):", Acceptable.YES_NO_VALID);
+            String returnMenu = Inputter.inputAndLoop("Do you want to continue with another update? (Y/N):", "Invalid choice! Please enter Y or N.", Acceptable.YES_NO_VALID);
 
             if (returnMenu.equalsIgnoreCase("N")) {
                 break;
@@ -280,7 +220,7 @@ public class Menu {
     }
     
     void saveDataToFile() {
-        String saveChoice = Inputter.inputAndLoop("Which do you want to save? (Choose 1-2):\n1. Customers\n2. Order List\nChoose:", "^(1|2)");
+        String saveChoice = Inputter.inputAndLoop("Which do you want to save? (Choose 1-2):\n1. Customers\n2. Order List\nChoose:", "Invalid choice! Please enter 1 or 2.", "^(1|2)$");
         if (saveChoice.equals("1")) {
             listCustomer.saveToFile();
         } else {
@@ -289,7 +229,7 @@ public class Menu {
     }
     
     void displayCustomerOrderList() {
-        String displaySavedInfo = Inputter.inputAndLoop("What do you want to show? (Choose 1-2)\n1. Customers\n2. Order List\nChoose:","^(1|2)$");
+        String displaySavedInfo = Inputter.inputAndLoop("What do you want to show? (Choose 1-2)\n1. Customers\n2. Order List\nChoose:", "Invalid choice! Please enter 1 or 2.", "^(1|2)$");
 
         if (displaySavedInfo.equals("1")) {
             listCustomer.showAll();
