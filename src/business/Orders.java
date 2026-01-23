@@ -9,12 +9,11 @@ import tools.FileUtils;
 
 public class Orders extends HashSet<Order> implements Workable<Order>{
     
-    private boolean saved;
-    private String pathFileSave;
+    private final String pathFileSave;
     
-    private SetMenus listSetMenu;
+    private final SetMenus listSetMenu;
     
-    private SimpleDateFormat formatTime = new SimpleDateFormat("dd/MM/yyyy");
+    private final SimpleDateFormat formatTime = new SimpleDateFormat("dd/MM/yyyy");
     
     public SetMenus getListSetMenu() {
         return listSetMenu;
@@ -24,22 +23,18 @@ public class Orders extends HashSet<Order> implements Workable<Order>{
     public Orders() {
         listSetMenu = new SetMenus();
         pathFileSave = "src/feast_order_service.dat";
-        saved = false;
         listSetMenu.readFromFile();
     }
     
-    public boolean isSaved() {
-        return saved;
-    }
-
     public boolean isDuplicate(Order x) {
         return this.contains(x);
     }
     
     @Override
     public void addNew(Order x) {
-        if (!this.isDuplicate(x))
+        if (!this.isDuplicate(x)) {
             this.add(x);
+        }
     }
     
     @Override
@@ -50,7 +45,6 @@ public class Orders extends HashSet<Order> implements Workable<Order>{
             updateOrder.setMenuId(x.getMenuId());
             updateOrder.setNumOfTables(x.getNumOfTables());
             updateOrder.setEventDate(x.getEventDate());
-            saved = false;
         }
     }
     
@@ -87,7 +81,7 @@ public class Orders extends HashSet<Order> implements Workable<Order>{
         }
         
         System.out.println("-------------------------------------------------------------------------------");
-        System.out.println(String.format("%-15s|%-10s|%-11s|%-7s|%-9s|%-6s|%15s","ID","Event","Customer ID","SetMenu","Price","Tables","Cost"));
+        System.out.println(String.format("%-15s|%-10s|%-12s|%-8s|%-9s|%-6s|%13s","ID","Event","Customer ID","SetMenu","Price","Tables","Cost"));
         System.out.println("-------------------------------------------------------------------------------");
         for (Order order:orders) {
             
@@ -95,7 +89,7 @@ public class Orders extends HashSet<Order> implements Workable<Order>{
             String costToPrint = listSetMenu.formatSetMenuPrice(listSetMenu.isValidMenuId(order.getMenuId()).getPrice()*order.getNumOfTables()); costToPrint = costToPrint.substring(0, costToPrint.length()-4);
             
             
-            System.out.println(String.format("%-15s|%-10s|%-11s|%-7s|%-9s|%6s|%15s", order.getOrderCode(), formatTime.format(order.getEventDate()), order.getCustomerId(), order.getMenuId(), 
+            System.out.println(String.format("%-15s|%-10s|%-12s|%-8s|%-9s|%6s|%13s", order.getOrderCode(), formatTime.format(order.getEventDate()), order.getCustomerId(), order.getMenuId(), 
                     priceToPrint,order.getNumOfTables(),
                     costToPrint));
         }          
@@ -115,8 +109,6 @@ public class Orders extends HashSet<Order> implements Workable<Order>{
     }
     
     public void saveToFile() {
-       if (this.isSaved()) return;
-       saved = true;
        FileUtils.saveToFile(toList(), pathFileSave);
        System.out.println("Order data has been successfully saved to “feast_order_service.dat”.");
     }

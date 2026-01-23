@@ -1,13 +1,16 @@
 package model;
 
 public class SetMenu {
-    String menuId;
-    String menuName;
-    double price;
-    String ingredients;
+    private String menuId;
+    private String menuName;
+    private double price;
+    private String ingredients;
     
     public SetMenu() {
-        
+        menuId = "";
+        menuName = "";
+        price = 0;
+        ingredients = "";
     }
 
     public SetMenu(String menuId, String menuName, double price, String ingredients) {

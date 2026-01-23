@@ -7,7 +7,7 @@ import java.util.Scanner;
 import model.SetMenu;
 
 public class SetMenus extends ArrayList<SetMenu> {
-    String pathFile;
+    private String pathFile;
     public SetMenus() {
         pathFile = "src/FeastMenu.csv";
         readFromFile();
@@ -44,18 +44,15 @@ public class SetMenus extends ArrayList<SetMenu> {
     }
     
     public String formatSetMenuPrice(double price) {
-        String cost = String.format("%.0f",price);
-        String returnFormat = "";
-        
-        if (cost.length() % 3 != 0) {
-            returnFormat = returnFormat.concat(cost.substring(0,cost.length()%3)+",");
+        String formatPrice = String.format("%.0f", price);
+        String returnPrice = "";
+        if (formatPrice.length() % 3 != 0) {
+            returnPrice = returnPrice + formatPrice.substring(0, formatPrice.length() % 3) + ",";
         }
-        for (int j = cost.length()%3; j < cost.length(); j+=3) {
-            returnFormat = returnFormat.concat(cost.substring(j,j+3)+",");
+        for (int i = formatPrice.length() % 3; i < formatPrice.length(); i += 3) {
+            returnPrice = returnPrice + formatPrice.substring(i, i + 3) + ",";
         }
-        
-        return returnFormat.substring(0,returnFormat.length()-1) + " Vnd";
-        
+        return returnPrice.substring(0, returnPrice.length() - 1) + " Vnd";
     }
     
     public void showMenuList() {
@@ -63,7 +60,6 @@ public class SetMenus extends ArrayList<SetMenu> {
         System.out.println("List of Set Menus for ordering party:");
         System.out.println("----------------------------------------------------");
         
-        // Bubble sort by price
         for (int i = 0; i < this.size() - 1; i++) {
             for (int j = 0; j < this.size() - 1 - i; j++) {
                 if (Double.compare(this.get(j).getPrice(), this.get(j + 1).getPrice()) > 0) {

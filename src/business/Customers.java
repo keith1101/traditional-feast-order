@@ -5,16 +5,10 @@ import model.Customer;
 import tools.FileUtils;
 
 public class Customers extends ArrayList<Customer> implements Workable<Customer> {
-    String pathFileSave;
-    boolean saved;
+    private String pathFileSave;
     
     public Customers() {
         pathFileSave = "src/customer.dat";
-        saved = false;
-    }
-    
-    public boolean isSaved() {
-        return saved;
     }
     
     @Override
@@ -35,80 +29,74 @@ public class Customers extends ArrayList<Customer> implements Workable<Customer>
     @Override
     public Customer searchById(String id) {
         for (Customer customer: this) {
-            if (id.equals(customer.getId())) {
+            if (id.equalsIgnoreCase(customer.getId())) {
                 return customer;
             }
         }
         return null;
     }
     
-    public String formatName(String name) {
-        if (name == null || name.isEmpty()) return "";
-        String[] customerName = name.split(" ");
-        String temp = customerName[customerName.length - 1];
-        customerName[customerName.length - 1] = "";
-        return temp+", "+String.join(" ", customerName).trim();
+
+    private void sortByLastName(List<Customer> customers) {
+        for (int i = 0; i < customers.size() - 1; ++i) {
+            for (int j = 0; j < customers.size() - 1 - i; ++j) {
+                String last1[] = customers.get(j).getName().split(" ");
+                String last2[] = customers.get(j + 1).getName().split(" ");
+                
+                if (last1[last1.length - 1].compareToIgnoreCase(last2[last2.length - 1]) > 0) {
+                    Customer temp = customers.get(j);
+                    customers.set(j, customers.get(j+1));
+                    customers.set(j+1, temp);
+                }
+            }
+        }
     }
     
     public List<Customer> filterByName(String name) {
-        name = name.toLowerCase();
-        ArrayList<Customer> filteredCustomers = new ArrayList<>();
-        for (Customer customer: this) {
-            String[] customerName = customer.getName().split(" ");
-            if (customerName[customerName.length - 1].toLowerCase().contains(name)) {
-                String temp = customerName[customerName.length - 1];
-                customerName[customerName.length - 1] = "";
-                
-                Customer customerBeFiltered = new Customer(customer.getId(),customer.getName(),customer.getPhone(),customer.getEmail());
-                customerBeFiltered.setName(temp+", "+String.join(" ", customerName).trim());
-                
-                filteredCustomers.add(customerBeFiltered);
+        List<Customer> filteredCustomers = new ArrayList<>();
+        for (Customer customer : this) {
+            String[] lastCustomerName = customer.getName().split(" ");
+            if (lastCustomerName[lastCustomerName.length - 1].toLowerCase().contains(name.toLowerCase())) {
+                filteredCustomers.add(customer);
             }
         }
-        
-        for (int i = 0; i < filteredCustomers.size() - 1; i++) {
-            for (int j = 0; j < filteredCustomers.size() - 1 - i; j++) {
-                if (filteredCustomers.get(j).getName().compareTo(filteredCustomers.get(j + 1).getName()) > 0) {
-                    Customer temp = filteredCustomers.get(j);
-                    filteredCustomers.set(j, filteredCustomers.get(j + 1));
-                    filteredCustomers.set(j + 1, temp);
-                }
-            }
-        }
-        return filteredCustomers;
 
+        sortByLastName(filteredCustomers);
+        return filteredCustomers;
     }
     
+    public String formatName(String name) {
+        if (name == null || name == "") return "";
+        
+        String[] nameFormated = name.split(" ");
+        String lastName = nameFormated[nameFormated.length - 1];
+        nameFormated[nameFormated.length - 1] = "";
+        
+        String returnName = lastName + ", " + String.join(" ", nameFormated);
+        return returnName.trim();
+    }
+
     @Override
     public void showAll() {
-        saveToFile();
-        this.clear();
         readFromFile();
 
-        for (int i = 0; i < this.size() - 1; i++) {
-            for (int j = 0; j < this.size() - 1 - i; j++) {
-                if (this.get(j).getName().compareTo(this.get(j + 1).getName()) > 0) {
-                    Customer temp = this.get(j);
-                    this.set(j, this.get(j + 1));
-                    this.set(j + 1, temp);
-                }
-            }
-        }
+        sortByLastName(this);
+
         showAll(this);
     }
     
     public void showAll(List<Customer> customers) {
         if (customers.isEmpty()) {
             System.out.println("Does not have any customer information.");
-            return;
+        } else {
+            System.out.println("-------------------------------------------------------------------------");
+            System.out.println(String.format("%-10s|%-20s|%-20s|%-20s","Code","Customer Name","Phone","Email"));
+            System.out.println("-------------------------------------------------------------------------");
+            for (Customer customer:customers) {
+                System.out.println(String.format("%-10s|%-20s|%-20s|%-20s", customer.getId(), formatName(customer.getName()), customer.getPhone(), customer.getEmail()));
+            }            
+            System.out.println("-------------------------------------------------------------------------");
         }
-        System.out.println("-------------------------------------------------------------------------");
-        System.out.println(String.format("%-10s|%-20s|%-20s|%-20s","Code","Customer Name","Phone","Email"));
-        System.out.println("-------------------------------------------------------------------------");
-        for (Customer customer:customers) {
-            System.out.println(String.format("%-10s|%-20s|%-20s|%-20s", customer.getId(), customer.getName(), customer.getPhone(), customer.getEmail()));
-        }            
-        System.out.println("-------------------------------------------------------------------------");
     }
     
     
@@ -119,9 +107,7 @@ public class Customers extends ArrayList<Customer> implements Workable<Customer>
     }
     
     public void saveToFile() {
-        if (this.isSaved()) return;
         FileUtils.saveToFile(this, pathFileSave);
-        saved = true;
         System.out.println("Customer data has been successfully saved to “customers.dat”.");
     }
     

@@ -3,13 +3,16 @@ package model;
 import java.io.Serializable;
 
 public class Customer implements Serializable{
-    String id;
-    String name;
-    String phone;
-    String email;
+    private String id;
+    private String name;
+    private String phone;
+    private String email;
     
     public Customer() {
-    
+        id = "";
+        name = "";
+        phone = "";
+        email = "";
     }
     
     public Customer(String id, String name, String phone, String email) {

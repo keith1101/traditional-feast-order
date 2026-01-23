@@ -1,20 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dispatcher;
-import model.*;
-import tools.*;
-import business.*;
+import model.Customer;
+import model.Order;
+import tools.Acceptable;
+import tools.Inputter;
+import business.Customers;
+import business.Orders;
+import business.SetMenus;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-/**
- *
- * @author LENOVO
- */
+
 public class Menu {
-    void displayMenu() {
+    private void displayMenu() {
         System.out.println("Menu");
         System.out.println("1. Register customers.");
         System.out.println("2. Update customer information.");
@@ -27,11 +24,12 @@ public class Menu {
         System.out.println("9. Quit.");
     }
     
-    Customers listCustomer = new Customers();
-    SetMenus listFeast = new SetMenus();
-    Orders listOrder = new Orders();
+    private Customers listCustomer = new Customers();
+    private SetMenus listFeast = new SetMenus();
+    private Orders listOrder = new Orders();
 
     public void showMenu() {
+        boolean exitMenu = false;
         do {
             displayMenu();
             int choice = 0;
@@ -69,61 +67,63 @@ public class Menu {
                 case 8:
                     displayCustomerOrderList();
                     break;
-                default:
-                    return;
+                case 9:
+                    exitMenu = true;
             }
             
-        } while (true);
+        } while (exitMenu == false);
     }
     
-    void registerCustomer() {
+    private void registerCustomer() {
         Customer customer;
+        String returnMenu;
         do {
             String customerId = "";
             do {
-                customerId = Inputter.inputAndLoop("\nEnter Customer Code:", "Invalid customer code! Must start with C, G, or K followed by 4 digits.", Acceptable.CUSTOMER_ID_VALID);
+                customerId = Inputter.inputAndLoop("\nEnter Customer Code:", "Invalid customer code! (Must start with C/G/K followed by 4 digits)", Acceptable.CUSTOMER_ID_VALID);
                 if (listCustomer.searchById(customerId) != null) {
-                    System.out.println("Customer Id exists!");
+                    System.out.println("Customer Id already exists!");
                 }
             } while(listCustomer.searchById(customerId) != null);
 
-            String customerName = Inputter.inputAndLoop("Enter Customer Name:", "Invalid name! Must be 2-25 alphabetic characters.", Acceptable.NAME_VALID);
-            String customerPhone = Inputter.inputAndLoop("Enter Customer Phone Number:", "Invalid phone number! Must start with 09 followed by 8 digits.", Acceptable.PHONE_VALID);
-            String customerEmail = Inputter.inputAndLoop("Enter Customer Email:", "Invalid email format! Valid: example@gmail.com.", Acceptable.EMAIL_VALID);
+            String customerName = Inputter.inputAndLoop("Enter Customer Name:", "Invalid name! (2-25 alphabetic characters only)", Acceptable.NAME_VALID);
+            String customerPhone = Inputter.inputAndLoop("Enter Customer Phone Number:", "Invalid phone number! (Must start with 090 and have 10 digits)", Acceptable.PHONE_VALID);
+            String customerEmail = Inputter.inputAndLoop("Enter Customer Email:", "Invalid email format! (example@domain.com)", Acceptable.EMAIL_VALID);
 
             customer = new Customer(customerId, customerName, customerPhone, customerEmail);
             listCustomer.addNew(customer);
+            System.out.println("Customer registered successfully!");
 
-            String returnMenu = Inputter.inputAndLoop("Do you want to continue entering new customers? (Y/N)", "Invalid choice! Please enter Y or N.", Acceptable.YES_NO_VALID);
+            returnMenu = Inputter.inputAndLoop("\nDo you want to continue entering new customers? (Y/N):", "Invalid choice! (Y or N only)", Acceptable.YES_NO_VALID);
 
-            if (returnMenu.equalsIgnoreCase("N"))
-                break;
-        } while (true);
+        } while (returnMenu.equalsIgnoreCase("N") == false);
     }
     
-    void updateCustomerInformation() {
+    private void updateCustomerInformation() {
+        
         Customer customer;
-        while(true) {
+        String returnMenu;
+        do {
             String customerId;
             do {
-                customerId = Inputter.inputAndLoop("Enter Customer Code to update:", "Invalid customer code! Must start with C, G, or K followed by 4 digits.", Acceptable.CUSTOMER_ID_VALID);
+                customerId = Inputter.inputAndLoop("Enter Customer Code to update:", "Invalid customer code! (Must start with C/G/K followed by 4 digits)", Acceptable.CUSTOMER_ID_VALID);
                 if (listCustomer.searchById(customerId) == null) {
-                    System.out.println("This customer does not exist");
+                    System.out.println("Customer not found!");
                 }
             } while (listCustomer.searchById(customerId) == null);
 
             customer = listCustomer.searchById(customerId);
 
-            String customerName = Inputter.inputAndLoop("Enter updated name (Press 'Enter' to keep the old value):", "Invalid name! Must be 2-25 alphabetic characters or press Enter to skip.", "(" + Acceptable.NAME_VALID + "|^$)");
+            String customerName = Inputter.inputAndLoop("Enter updated name (Press 'Enter' to keep the old value):", "Invalid name! (2-25 alphabetic characters only)", "(" + Acceptable.NAME_VALID + "|^$)");
             if (customerName != null && !customerName.isEmpty()) {
                 customer.setName(customerName);
             }
-            String customerPhone = Inputter.inputAndLoop("Enter updated phone number (Press 'Enter' to keep the old value):", "Invalid phone number! Must start with 09 followed by 8 digits or press Enter to skip.", "(" + Acceptable.PHONE_VALID + "|^$)");
+            String customerPhone = Inputter.inputAndLoop("Enter updated phone number (Press 'Enter' to keep the old value):", "Invalid phone number! (Must start with 090 and have 10 digits)", "(" + Acceptable.PHONE_VALID + "|^$)");
             if (customerPhone != null && !customerPhone.isEmpty()) {
                 customer.setPhone(customerPhone);
             }
             
-            String customerEmail = Inputter.inputAndLoop("Enter updated email (Press 'Enter' to keep the old value):", "Invalid email format or press Enter to skip!", "(" + Acceptable.EMAIL_VALID + "|^$)");
+            String customerEmail = Inputter.inputAndLoop("Enter updated email (Press 'Enter' to keep the old value):", "Invalid email format! (example@domain.com)", "(" + Acceptable.EMAIL_VALID + "|^$)");
             if (customerEmail != null && !customerEmail.isEmpty()) {
                 customer.setEmail(customerEmail);
             }
@@ -131,28 +131,27 @@ public class Menu {
             listCustomer.update(customer);
             System.out.println("Customer information updated successfully!");
 
-            String returnMenu = Inputter.inputAndLoop("Do you want to continue with another update? (Y/N):", "Invalid choice! Please enter Y or N.", Acceptable.YES_NO_VALID);
-            if (returnMenu.equalsIgnoreCase("N")) {
-                break;
-            }
-        }
+            returnMenu = Inputter.inputAndLoop("Do you want to continue with another update? (Y/N):", "Invalid choice! (Y or N only)", Acceptable.YES_NO_VALID);
+
+        } while (returnMenu.equalsIgnoreCase("N") == false);
     }
     
-    void searchForCustomerInformationByName() {
+    private void searchForCustomerInformationByName() {
         Inputter.searchCustomerByName(listCustomer);
     }
     
-    void displayFeastMenu() {
+    private void displayFeastMenu() {
         listFeast.showMenuList();
     }
     
-    void placeAFeastOrder() {
+    private void placeAFeastOrder() {
         Inputter.placeFeastOrder(listCustomer, listFeast, listOrder);
     }
     
-    void updateOrderInformation() {
+    private void updateOrderInformation() {
         Order order;
-        while (true) {
+        String returnMenu;
+        do {
             String orderId;
             do {
                 orderId = Inputter.getString("Enter order id:");
@@ -167,41 +166,42 @@ public class Menu {
             String codeOfSetMenu;
             do {
                 codeOfSetMenu = Inputter.getString("Enter the menu code to update (Press 'Enter' to keep the old value):");
-                if (codeOfSetMenu != null && listOrder.getListSetMenu().isValidMenuId(codeOfSetMenu) == null) {
-                    System.out.println("Code menu does not exists!");
+                if (codeOfSetMenu != null && !codeOfSetMenu.isEmpty() && listOrder.getListSetMenu().isValidMenuId(codeOfSetMenu) == null) {
+                    System.out.println("Menu code does not exist!");
                 }
-            } while (listOrder.getListSetMenu().isValidMenuId(codeOfSetMenu) == null && codeOfSetMenu != null && codeOfSetMenu.isEmpty());
+            } while (listOrder.getListSetMenu().isValidMenuId(codeOfSetMenu) == null && codeOfSetMenu != null && !codeOfSetMenu.isEmpty());
             if (codeOfSetMenu != null && !codeOfSetMenu.isEmpty()) {
                 order.setMenuId(codeOfSetMenu);
             }
 
             String numOfTable;
             do {
-                numOfTable = Inputter.inputAndLoop("Enter number of table to update (Press 'Enter' to keep the old value):", "Invalid number! Must be a positive integer or press Enter to skip.", "(" + Acceptable.INTEGER_VALID + "|^$)");
-                if (!numOfTable.isEmpty() && numOfTable != null && Integer.parseInt(numOfTable) <= 0) {
+                numOfTable = Inputter.inputAndLoop("Enter number of table to update (Press 'Enter' to keep the old value):", "Invalid number! (Must be a positive integer)", "(" + Acceptable.INTEGER_VALID + "|^$)");
+                if (!numOfTable.isEmpty() && Integer.parseInt(numOfTable) <= 0) {
                     System.out.println("Number of tables need to be greater than 0.");
                 }
-            } while (!numOfTable.isEmpty() && numOfTable != null && Integer.parseInt(numOfTable) <= 0);
-            if (!numOfTable.isEmpty() && numOfTable != null) {
+            } while (!numOfTable.isEmpty() && Integer.parseInt(numOfTable) <= 0);
+            if (!numOfTable.isEmpty()) {
                 order.setNumOfTables(Integer.parseInt(numOfTable));
             }
 
             Date dateObj = null;
             SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM/yyyy");
+            formatDate.setLenient(false);
             do {
                 dateObj = null;
                 try {
                     String dateObjString = Inputter.getString("Enter date to update (Press 'Enter' to keep the old value):");
-                    if (dateObjString.isEmpty() || dateObjString == null) {
+                    if (dateObjString.isEmpty()) {
                         break;
                     }
                     dateObj = formatDate.parse(dateObjString);
                     if (dateObj != null && new Date().after(dateObj)) {
-                        System.out.println("The preferred date needs to be in the future!");
+                        System.out.println("Date must be in the future!");
                         dateObj = null;
                     }
                 } catch (ParseException e) {
-                    System.out.println("Wrong date format!");
+                    System.out.println("Invalid date format! (Use dd/MM/yyyy)");
                 }
 
             } while (dateObj == null || new Date().after(dateObj));
@@ -211,16 +211,13 @@ public class Menu {
             }
             
             listOrder.update(order);
-            String returnMenu = Inputter.inputAndLoop("Do you want to continue with another update? (Y/N):", "Invalid choice! Please enter Y or N.", Acceptable.YES_NO_VALID);
+            returnMenu = Inputter.inputAndLoop("Do you want to continue with another update? (Y/N):", "Invalid choice! (Y or N only)", Acceptable.YES_NO_VALID);
 
-            if (returnMenu.equalsIgnoreCase("N")) {
-                break;
-            }
-        }
+        } while (returnMenu.equalsIgnoreCase("N") == false);
     }
     
-    void saveDataToFile() {
-        String saveChoice = Inputter.inputAndLoop("Which do you want to save? (Choose 1-2):\n1. Customers\n2. Order List\nChoose:", "Invalid choice! Please enter 1 or 2.", "^(1|2)$");
+    private void saveDataToFile() {
+        String saveChoice = Inputter.inputAndLoop("Which do you want to save? (Choose 1-2):\n1. Customers\n2. Order List\nChoose:", "Invalid choice!", "^(1|2)$");
         if (saveChoice.equals("1")) {
             listCustomer.saveToFile();
         } else {
@@ -228,8 +225,8 @@ public class Menu {
         }
     }
     
-    void displayCustomerOrderList() {
-        String displaySavedInfo = Inputter.inputAndLoop("What do you want to show? (Choose 1-2)\n1. Customers\n2. Order List\nChoose:", "Invalid choice! Please enter 1 or 2.", "^(1|2)$");
+    private void displayCustomerOrderList() {
+        String displaySavedInfo = Inputter.inputAndLoop("What do you want to show? (Choose 1-2)\n1. Customers\n2. Order List\nChoose:", "Invalid choice!", "^(1|2)$");
 
         if (displaySavedInfo.equals("1")) {
             listCustomer.showAll();

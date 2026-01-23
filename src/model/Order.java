@@ -6,11 +6,11 @@ import java.util.Date;
 import java.util.Objects;
 
 public class Order implements Serializable {
-    String orderCode;
-    String customerId;
-    String menuId;
-    int numOfTables;
-    Date eventDate;
+    private String orderCode;
+    private String customerId;
+    private String menuId;
+    private int numOfTables;
+    private Date eventDate;
 
     @Override
     public int hashCode() {

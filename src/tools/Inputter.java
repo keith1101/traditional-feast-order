@@ -3,6 +3,7 @@ package tools;
 import business.Customers;
 import business.Orders;
 import business.SetMenus;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -12,48 +13,54 @@ import model.Customer;
 import model.Order;
 
 public class Inputter {
-    static Scanner scanner = new Scanner(System.in);
-    
+    private static Scanner scanner = new Scanner(System.in);
+
     public Inputter() {
     }
     
     public static String getString(String mess) {
-        System.out.print(mess);
-        return scanner.nextLine();
+        System.out.println(mess);
+        String result = scanner.nextLine().trim();
+        return result;
     }
-    
+
     public static int getInt(String mess) {
-        int result = 0;
-        String temp = getString(mess);
-        if (Acceptable.isValid(temp, Acceptable.INTEGER_VALID))
-            result = Integer.parseInt(temp);
-        return result;
+        String result = getString(mess);
+        if (!Acceptable.isValid(result, Acceptable.INTEGER_VALID)) {
+            System.out.println("Integer invalid!");
+            return 0;
+        }
+        return Integer.parseInt(result);
     }
-    
+
     public static double getDouble(String mess) {
-        double result = 0;
-        String temp = getString(mess);
-        if (Acceptable.isValid(temp, Acceptable.DOUBLE_VALID))
-            result = Double.parseDouble(temp);
-        return result;
+        String result = getString(mess);
+        if (!Acceptable.isValid(result, Acceptable.DOUBLE_VALID)) {
+            System.out.println("Double invalid!");
+            return 0.0;
+        }
+
+        return Double.parseDouble(result);
     }
-    
+
     public static String inputAndLoop(String mess, String invalidMess, String pattern) {
         boolean more = true;
         String result;
         do {
-            result = getString(mess).trim();
+            result = getString(mess);
             more = !Acceptable.isValid(result, pattern);
             if (more) {
                 System.out.println(invalidMess);
             }
         } while (more);
+
         return result;
     }
 
     public static void searchCustomerByName(Customers listCustomer) {
-        while (true) {
-            String name = Inputter.inputAndLoop("Enter customer name to search:", "Invalid name! Must be 2-25 alphabetic characters.", Acceptable.NAME_VALID);
+        String returnMenu;
+        do {
+            String name = Inputter.inputAndLoop("Enter customer name to search:", "Invalid name! (2-25 alphabetic characters only)", Acceptable.NAME_VALID);
             List<Customer> customers = listCustomer.filterByName(name);
             if (!customers.isEmpty()) {
                 listCustomer.showAll(customers);
@@ -61,12 +68,9 @@ public class Inputter {
                 System.out.println("No one matches the search criteria!");
             }
             
-            String choice = Inputter.inputAndLoop("Do you want to continue to search for customers by name? (Y/N):", "Invalid choice! Please enter Y or N.", Acceptable.YES_NO_VALID);
-            
-            if (choice.equalsIgnoreCase("N")) {
-                break;
-            }
-        }
+            returnMenu = Inputter.inputAndLoop("Do you want to continue to search for customers by name? (Y/N):", "Invalid choice! (Y or N only)", Acceptable.YES_NO_VALID);
+
+        } while (returnMenu.equalsIgnoreCase("N") == false);
     }
 
     public static void displaySuccess(Customers listCustomer, SetMenus listFeast, Orders listOrder, Order x) {
@@ -107,10 +111,12 @@ public class Inputter {
 
     public static void placeFeastOrder (Customers listCustomer, SetMenus listFeast, Orders listOrder) {
         SimpleDateFormat formatTime = new SimpleDateFormat("dd/MM/yyyy");
-        while (true) {
+        formatTime.setLenient(false);
+        String returnMenu;
+        do {
             String customerId;
             do {
-                customerId = Inputter.inputAndLoop("Enter customer code to order:", "Invalid customer code! Must start with C, G, or K followed by 4 digits.", Acceptable.CUSTOMER_ID_VALID);
+                customerId = Inputter.inputAndLoop("Enter customer code to order:", "Invalid customer code! (Must start with C/G/K followed by 4 digits)", Acceptable.CUSTOMER_ID_VALID);
                 if (listCustomer.searchById(customerId) == null) {
                     System.out.println("Customer code doesn't exist!");
                 }
@@ -128,7 +134,7 @@ public class Inputter {
             do {
                 numOfTables = Inputter.getInt("Enter number of tables:");
                 if (numOfTables <= 0) {
-                    System.out.println("Number of tables is greater than 0!");
+                    System.out.println("Number of tables must be greater than 0!");
                 }
             } while (numOfTables <= 0);
 
@@ -137,21 +143,20 @@ public class Inputter {
             do {
                 try {
                     date = formatTime.parse(Inputter.getString("Enter the event date:"));
+                    if (date != null && new Date().after(date)) {
+                        System.out.println("Date must be in the future!");
+                        date = null;
+                    }
                 } catch (ParseException e) {
-                    System.out.println("Wrong date format!");
-                    continue;
+                    System.out.println("Invalid date format! (Use dd/MM/yyyy)");
                 }
-
-
-                if (new Date().after(date)) {
-                    System.out.println("The preferred event date must be in the future.");
-                }
-            } while (new Date().after(date));
+            } while (date == null);
 
             Order newOrder = new Order(customerId, setMenuCode, numOfTables, date);
 
             if (listOrder.isDuplicate(newOrder)) {
-                System.out.println("Dupplicate data!");
+                System.out.println("Duplicate order!");
+                returnMenu = Inputter.inputAndLoop("Do you want to continue with place another order? (Y/N):", "Invalid choice! (Y or N only)", Acceptable.YES_NO_VALID);
                 continue;
             } 
 
@@ -159,10 +164,8 @@ public class Inputter {
             
             displaySuccess(listCustomer, listFeast, listOrder, newOrder);
 
-            String returnMenu = Inputter.inputAndLoop("Do you want to continue with place another order? (Y/N):", "Invalid choice! Please enter Y or N.", Acceptable.YES_NO_VALID);
-            if (returnMenu.equalsIgnoreCase("N")) {
-                break;
-            }
-        }
+            returnMenu = Inputter.inputAndLoop("Do you want to continue with place another order? (Y/N):", "Invalid choice! (Y or N only)", Acceptable.YES_NO_VALID);
+
+        } while (returnMenu.equalsIgnoreCase("N") == false);
     }
 }

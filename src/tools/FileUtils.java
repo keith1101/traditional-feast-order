@@ -2,6 +2,7 @@ package tools;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,49 +12,43 @@ import java.util.List;
 
 public class FileUtils<T> {
     public static <T> List<T> readFromFile(String filePath) {
-        List<T> listObject = new ArrayList<>();
-        FileInputStream fileInputStreamObject;
+        List<T> listObj = new ArrayList<>();
+        FileInputStream fileInputStreamObj;
         try {
             File file = new File(filePath);
-            
-            fileInputStreamObject = new FileInputStream(file);
-            try {
-                ObjectInputStream objectInputStreamObject = new ObjectInputStream(fileInputStreamObject);
-                while (fileInputStreamObject.available() > 0) {
-                    T object = (T) objectInputStreamObject.readObject();
-                    listObject.add(object);
-                }
-                
-                fileInputStreamObject.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+            fileInputStreamObj = new FileInputStream(file);
+            ObjectInputStream objectInputStreamObj = new ObjectInputStream(fileInputStreamObj);
+            while (fileInputStreamObj.available() > 0) {
+                T object = (T) objectInputStreamObj.readObject();
+                listObj.add(object);
             }
-            
+            fileInputStreamObj.close();
+            objectInputStreamObj.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: " + filePath);
         } catch (IOException e) {
-            System.out.println("Error reading from file: " + filePath);
+            System.out.println("Error reading file: " + filePath);
+        } catch (ClassNotFoundException e) {
+            System.out.println("Invalid data format in file: " + filePath);
         }
-        return listObject;
+        return listObj;
     }
     
-    public static <T> void saveToFile(List<T> listObject, String filePath) {
-        FileOutputStream fileOutputStreamObject;
+    public static <T> void saveToFile(List<T> listObj, String filePath) {
+        FileOutputStream fos;
         try {
             File file = new File(filePath);
-            fileOutputStreamObject = new FileOutputStream(file);
-            try {
-                ObjectOutputStream objectOutputStreamObject = new ObjectOutputStream(fileOutputStreamObject);
-                for (T object : listObject) {
-                    objectOutputStreamObject.writeObject(object);
-                }
-                
-                fileOutputStreamObject.close();
-                objectOutputStreamObject.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+            fos = new FileOutputStream(file);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            for (T object : listObj) {
+                oos.writeObject(object);
             }
-        }
-        catch (IOException e) {
-            System.out.println("Error saving to file: " + filePath + " - " + e.getMessage());
+            fos.close();
+            oos.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot create file: " + filePath);
+        } catch (IOException e) {
+            System.out.println("Error writing to file: " + filePath);
         }
     }
 }
